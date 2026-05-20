@@ -126,6 +126,26 @@ describe('POST /api/auth/login', () => {
     assert.equal(res.json().code, 'INVALID_CREDENTIALS')
   })
 
+  it('honors rememberMe for refresh token expiry', async (t: TestContext) => {
+    prismaMock.user.findUnique.mock.mockImplementation(() => Promise.resolve(DEMO_USER))
+    prismaMock.refreshToken.create.mock.mockImplementation(() => Promise.resolve({ id: 'rt-1' }))
+
+    const app = await build(t)
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      payload: { email: 'admin@dashstack.com', password: 'admin123', rememberMe: true },
+    })
+
+    assert.equal(res.statusCode, 200)
+    const createCall = prismaMock.refreshToken.create.mock.calls[0] as unknown as {
+      arguments: [{ data: { expiresAt: Date } }]
+    } | undefined
+    const expiresAt = createCall?.arguments[0].data.expiresAt
+    const daysAhead = (expiresAt!.getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+    assert.ok(daysAhead > 20, 'rememberMe should use long TTL')
+  })
+
   it('returns 400 when email or password is missing', async (t: TestContext) => {
     const app = await build(t)
     const res = await app.inject({
@@ -255,6 +275,19 @@ describe('POST /api/auth/logout', () => {
     })
 
     assert.equal(res.statusCode, 204)
+  })
+})
+
+describe('API errors', () => {
+  it('returns 404 for unknown API routes', async (t: TestContext) => {
+    const app = await build(t)
+    const res = await app.inject({ method: 'GET', url: '/api/unknown' })
+
+    assert.equal(res.statusCode, 404)
+    assert.deepEqual(res.json(), {
+      code: 'NOT_FOUND',
+      message: 'Resource not found.',
+    })
   })
 })
 
