@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
@@ -6,8 +7,7 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
 
 }
 // Pass --options via CLI arguments in command to enable these options.
-const options: AppOptions = {
-}
+const options: AppOptions = {}
 
 const app: FastifyPluginAsync<AppOptions> = async (
   fastify,

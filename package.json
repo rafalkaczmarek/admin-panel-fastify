@@ -12,20 +12,35 @@
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js"
+    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "node prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "~5.8.5",
-    "fastify-plugin": "~5.1.0",
     "@fastify/autoload": "~6.3.1",
+    "@fastify/cookie": "~11.0.2",
+    "@fastify/cors": "~11.2.0",
     "@fastify/sensible": "~6.0.4",
-    "fastify-cli": "~8.0.0"
+    "@prisma/client": "~6.19.3",
+    "bcrypt": "~6.0.0",
+    "dotenv": "~17.4.2",
+    "fastify": "~5.8.5",
+    "fastify-cli": "~8.0.0",
+    "fastify-plugin": "~5.1.0",
+    "jsonwebtoken": "~9.0.3"
   },
   "devDependencies": {
+    "@types/bcrypt": "~6.0.0",
+    "@types/jsonwebtoken": "~9.0.10",
     "@types/node": "~25.9.1",
+    "prisma": "~6.19.3",
     "c8": "~11.0.0",
     "ts-node": "~10.9.2",
     "concurrently": "~9.2.1",
