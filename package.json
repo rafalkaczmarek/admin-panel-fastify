@@ -29,6 +29,8 @@
     "@fastify/cookie": "~11.0.2",
     "@fastify/cors": "~11.2.0",
     "@fastify/sensible": "~6.0.4",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.6",
     "@prisma/client": "~6.19.3",
     "bcrypt": "~6.0.0",
     "dotenv": "~17.4.2",
@@ -41,11 +43,11 @@
     "@types/bcrypt": "~6.0.0",
     "@types/jsonwebtoken": "~9.0.10",
     "@types/node": "~25.9.1",
-    "prisma": "~6.19.3",
     "c8": "~11.0.0",
-    "ts-node": "~10.9.2",
     "concurrently": "~9.2.1",
     "fastify-tsconfig": "~3.0.0",
+    "prisma": "~6.19.3",
+    "ts-node": "~10.9.2",
     "typescript": "~5.9.3"
   }
 }

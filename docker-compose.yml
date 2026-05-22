@@ -37,7 +37,7 @@ services:
       JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
       REFRESH_TTL_DAYS: ${REFRESH_TTL_DAYS:-7}
       REFRESH_TTL_REMEMBER_DAYS: ${REFRESH_TTL_REMEMBER_DAYS:-30}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4200}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:4000}
       RUN_SEED: ${RUN_SEED:-true}
     ports:
       - "${PORT:-3000}:3000"

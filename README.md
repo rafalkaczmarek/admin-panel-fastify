@@ -54,6 +54,10 @@ docker run --name admin-panel-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ad
 
    The API listens on `http://localhost:3000` by default.
 
+## API documentation (Swagger)
+
+With the server running, open [http://localhost:3000/documentation](http://localhost:3000/documentation) for the interactive Swagger UI. The OpenAPI JSON spec is served at `/documentation/json`.
+
 ## Running with Docker
 
 The repo ships a multi-stage `Dockerfile` and a `docker-compose.yml` that wires
@@ -131,4 +135,4 @@ The suite uses Node's built-in test runner and `fastify.inject()`. Prisma is swa
 | `JWT_ACCESS_TTL` | `15m` | Access token lifetime |
 | `REFRESH_TTL_DAYS` | `7` | Refresh token lifetime |
 | `REFRESH_TTL_REMEMBER_DAYS` | `30` | Refresh lifetime when `rememberMe: true` |
-| `CORS_ORIGIN` | `http://localhost:4200` | Allowed front-end origin (must echo back exactly for cookies to work) |
+| `CORS_ORIGIN` | `http://localhost:4000` | Allowed front-end origin (must echo back exactly for cookies to work) |

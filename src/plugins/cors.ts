@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin'
 import cors from '@fastify/cors'
 
-const DEFAULT_ORIGIN = 'http://localhost:4200'
+const DEFAULT_ORIGIN = 'http://localhost:4000'
 
 export default fp(async (fastify) => {
   await fastify.register(cors, {

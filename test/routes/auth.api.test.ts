@@ -8,7 +8,7 @@ process.env.JWT_ACCESS_SECRET = 'test-secret'
 process.env.JWT_ACCESS_TTL = '15m'
 process.env.REFRESH_TTL_DAYS = '7'
 process.env.REFRESH_TTL_REMEMBER_DAYS = '30'
-process.env.CORS_ORIGIN = 'http://localhost:4200'
+process.env.CORS_ORIGIN = 'http://localhost:4000'
 
 const prismaMock = {
   user: { findUnique: mock.fn<() => Promise<unknown>>() },
@@ -298,12 +298,12 @@ describe('CORS', () => {
       method: 'OPTIONS',
       url: '/api/auth/login',
       headers: {
-        origin: 'http://localhost:4200',
+        origin: 'http://localhost:4000',
         'access-control-request-method': 'POST',
       },
     })
 
-    assert.equal(res.headers['access-control-allow-origin'], 'http://localhost:4200')
+    assert.equal(res.headers['access-control-allow-origin'], 'http://localhost:4000')
     assert.equal(res.headers['access-control-allow-credentials'], 'true')
   })
 })

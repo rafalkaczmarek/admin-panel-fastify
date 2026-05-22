@@ -1,5 +1,6 @@
 import { type FastifyPluginAsync } from 'fastify'
 import { registerApiErrorHandler } from '../../../lib/api-error-handler.js'
+import { apiError, authResponse, loginBody } from '../../../lib/openapi-schemas.js'
 import * as authService from '../../../services/authService.js'
 
 const REFRESH_COOKIE = 'refreshToken'
@@ -23,7 +24,19 @@ function refreshCookieOptions (expiresAt: string) {
 const auth: FastifyPluginAsync = async (fastify) => {
   registerApiErrorHandler(fastify)
 
-  fastify.post<{ Body: LoginBody }>('/login', async (request, reply) => {
+  fastify.post<{ Body: LoginBody }>('/login', {
+    schema: {
+      tags: ['auth'],
+      summary: 'Sign in',
+      description: 'Returns a JWT access token and sets an httpOnly `refreshToken` cookie (path `/api/auth`).',
+      body: loginBody,
+      response: {
+        200: authResponse,
+        400: apiError,
+        401: apiError,
+      },
+    },
+  }, async (request, reply) => {
     const { email, password, rememberMe } = request.body || {}
 
     if (!email || !password) {
@@ -43,7 +56,17 @@ const auth: FastifyPluginAsync = async (fastify) => {
     return response
   })
 
-  fastify.post('/refresh', async (request, reply) => {
+  fastify.post('/refresh', {
+    schema: {
+      tags: ['auth'],
+      summary: 'Refresh session',
+      description: 'Requires the `refreshToken` httpOnly cookie from login. Rotates the refresh token and returns a new access token.',
+      response: {
+        200: authResponse,
+        401: apiError,
+      },
+    },
+  }, async (request, reply) => {
     const rawToken = request.cookies[REFRESH_COOKIE]
     const { refreshToken, response } = await authService.refresh(rawToken)
 
@@ -52,7 +75,14 @@ const auth: FastifyPluginAsync = async (fastify) => {
     return response
   })
 
-  fastify.post('/logout', async (request, reply) => {
+  fastify.post('/logout', {
+    schema: {
+      tags: ['auth'],
+      summary: 'Sign out',
+      description: 'Revokes the refresh token (if present) and clears the cookie. Idempotent.',
+      response: { 204: { type: 'null', description: 'No content' } },
+    },
+  }, async (request, reply) => {
     const rawToken = request.cookies[REFRESH_COOKIE]
     await authService.logout(rawToken)
     reply.clearCookie(REFRESH_COOKIE, { path: '/api/auth' })
