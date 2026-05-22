@@ -1,6 +1,6 @@
 import { type FastifyPluginAsync } from 'fastify'
-import { registerApiErrorHandler } from '../../../lib/api-error-handler'
-import * as authService from '../../../services/authService'
+import { registerApiErrorHandler } from '../../../lib/api-error-handler.js'
+import * as authService from '../../../services/authService.js'
 
 const REFRESH_COOKIE = 'refreshToken'
 

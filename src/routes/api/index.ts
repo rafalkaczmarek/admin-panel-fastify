@@ -1,5 +1,5 @@
 import { type FastifyPluginAsync } from 'fastify'
-import { registerApiErrorHandler } from '../../lib/api-error-handler'
+import { registerApiErrorHandler } from '../../lib/api-error-handler.js'
 
 const api: FastifyPluginAsync = async (fastify) => {
   registerApiErrorHandler(fastify)

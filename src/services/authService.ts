@@ -1,11 +1,11 @@
-import prisma from '../lib/prisma'
-import { verifyPassword } from '../lib/passwords'
+import prisma from '../lib/prisma.js'
+import { verifyPassword } from '../lib/passwords.js'
 import {
   signAccessToken,
   generateRefreshToken,
   hashRefreshToken,
   refreshExpiry,
-} from '../lib/tokens'
+} from '../lib/tokens.js'
 
 export class AuthError extends Error {
   status: number

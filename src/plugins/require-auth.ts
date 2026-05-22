@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin'
 import { type FastifyRequest } from 'fastify'
-import { verifyAccessToken } from '../lib/tokens'
-import { AuthError } from '../services/authService'
+import { verifyAccessToken } from '../lib/tokens.js'
+import { AuthError } from '../services/authService.js'
 
 declare module 'fastify' {
   interface FastifyRequest {

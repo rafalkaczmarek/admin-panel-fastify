@@ -1,5 +1,5 @@
 import { type FastifyError, type FastifyInstance } from 'fastify'
-import { AuthError } from '../services/authService'
+import { AuthError } from '../services/authService.js'
 
 function isAuthError (error: unknown): error is AuthError {
   return (
@@ -13,21 +13,22 @@ function isAuthError (error: unknown): error is AuthError {
 }
 
 function registerApiErrorHandler (fastify: FastifyInstance): void {
-  fastify.setErrorHandler((error: FastifyError, request, reply) => {
+  fastify.setErrorHandler((error: unknown, request, reply) => {
     if (isAuthError(error)) {
       return reply.status(error.status).send({ code: error.code, message: error.message })
     }
 
-    const status = error.statusCode ?? 500
+    const fastifyError = error as FastifyError
+    const status = fastifyError.statusCode ?? 500
     const isServerError = status >= 500
 
     if (isServerError) {
-      fastify.log.error(error)
+      fastify.log.error(fastifyError)
     }
 
     return reply.status(status).send({
-      code: (error as FastifyError & { code?: string }).code ?? (isServerError ? 'INTERNAL_ERROR' : 'BAD_REQUEST'),
-      message: isServerError ? 'Internal server error.' : (error.message ?? 'Bad request.'),
+      code: (fastifyError as FastifyError & { code?: string }).code ?? (isServerError ? 'INTERNAL_ERROR' : 'BAD_REQUEST'),
+      message: isServerError ? 'Internal server error.' : (fastifyError.message ?? 'Bad request.'),
     })
   })
 }

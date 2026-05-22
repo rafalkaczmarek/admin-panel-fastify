@@ -52,7 +52,46 @@ docker run --name admin-panel-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ad
    npm run dev
    ```
 
-   The API listens on `http://localhost:4000` by default.
+   The API listens on `http://localhost:3000` by default.
+
+## Running with Docker
+
+The repo ships a multi-stage `Dockerfile` and a `docker-compose.yml` that wires
+the API together with a Postgres 16 instance.
+
+1. Copy `.env.example` to `.env` and override anything you want (at minimum
+   `JWT_ACCESS_SECRET` and, in production, `CORS_ORIGIN`). The compose file
+   reads the same file automatically.
+2. Build and start the whole stack:
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+   On the first boot the `app` container will:
+   - apply `prisma migrate deploy` if a `prisma/migrations` directory exists,
+     otherwise fall back to `prisma db push` so the schema is created;
+   - run `prisma/seed.js` when `RUN_SEED=true` (default in compose) to create
+     the demo `admin@dashstack.com` / `admin123` user.
+
+3. The API listens on `http://localhost:${PORT:-3000}` and Postgres on
+   `localhost:${POSTGRES_PORT:-5432}` (data persisted in the
+   `admin-panel-db-data` volume).
+
+4. Tail logs or stop the stack:
+
+   ```bash
+   docker compose logs -f app
+   docker compose down            # keep the volume
+   docker compose down -v         # nuke the database too
+   ```
+
+To run only the database in a container (e.g. while developing the API with
+`npm run dev` on the host), use:
+
+```bash
+docker compose up -d db
+```
 
 ## API contract
 
@@ -69,8 +108,8 @@ The refresh cookie is `HttpOnly`, `SameSite=Lax`, scoped to `/api/auth`, and mar
 ## Integration with admin-panel-web
 
 1. Make sure PostgreSQL is running and `npm run prisma:migrate && npm run prisma:seed` have been executed.
-2. Start this API on port 4000 (`npm run dev`).
-3. In [admin-panel-web/src/environments/environment.ts](../admin-panel-web/src/environments/environment.ts), set `useMockAuth: false` (the `apiBaseUrl` is already `http://localhost:4000/api`).
+2. Start this API on port 3000 (`npm run dev`).
+3. In [admin-panel-web/src/environments/environment.ts](../admin-panel-web/src/environments/environment.ts), set `useMockAuth: false` (the `apiBaseUrl` is already `http://localhost:3000/api`).
 4. From `admin-panel-web`, run `npm start`. Sign in with `admin@dashstack.com` / `admin123`.
 
 ## Testing
@@ -85,7 +124,7 @@ The suite uses Node's built-in test runner and `fastify.inject()`. Prisma is swa
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `PORT` | `4000` | HTTP port |
+| `PORT` | `3000` | HTTP port |
 | `NODE_ENV` | `development` | Toggles secure cookies and verbose errors |
 | `DATABASE_URL` | (required) | Prisma PostgreSQL connection string |
 | `JWT_ACCESS_SECRET` | (required) | HMAC secret for access tokens |
