@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import * as assert from 'node:assert'
-import { hashPassword, verifyPassword } from '../../src/lib/passwords'
+import { hashPassword, verifyPassword } from '../../src/lib/passwords.js'
 
 describe('passwords', () => {
   it('hashPassword and verifyPassword round-trip', async () => {

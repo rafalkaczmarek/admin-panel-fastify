@@ -6,6 +6,10 @@ const port = Number(process.env.PORT) || 3000
 const serverUrl = process.env.API_PUBLIC_URL ?? `http://localhost:${port}`
 
 export default fp(async (fastify) => {
+  if (process.env.NODE_ENV === 'test') {
+    return
+  }
+
   await fastify.register(swagger, {
     openapi: {
       openapi: '3.0.3',
@@ -17,6 +21,7 @@ export default fp(async (fastify) => {
       servers: [{ url: serverUrl, description: 'API server' }],
       tags: [
         { name: 'auth', description: 'Authentication' },
+        { name: 'products', description: 'Product stock' },
         { name: 'health', description: 'Health check' },
       ],
       components: {

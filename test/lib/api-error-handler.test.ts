@@ -1,22 +1,27 @@
 import { describe, it } from 'node:test'
 import * as assert from 'node:assert'
 import Fastify from 'fastify'
-import { registerApiErrorHandler, isAuthError } from '../../src/lib/api-error-handler'
-import { AuthError } from '../../src/services/authService'
+import { registerApiErrorHandler, isDomainError } from '../../src/lib/api-error-handler.js'
+import { AuthError } from '../../src/services/authService.js'
+import { ProductError } from '../../src/services/productService.js'
 
-describe('isAuthError', () => {
+describe('isDomainError', () => {
   it('returns true for AuthError instances', () => {
-    assert.ok(isAuthError(new AuthError(401, 'INVALID_SESSION', 'nope')))
+    assert.ok(isDomainError(new AuthError(401, 'INVALID_SESSION', 'nope')))
+  })
+
+  it('returns true for ProductError instances', () => {
+    assert.ok(isDomainError(new ProductError(404, 'NOT_FOUND', 'missing')))
   })
 
   it('returns true for plain objects with status and code', () => {
-    assert.ok(isAuthError({ status: 403, code: 'FORBIDDEN', message: 'Denied' }))
+    assert.ok(isDomainError({ status: 403, code: 'FORBIDDEN', message: 'Denied' }))
   })
 
   it('returns false for unrelated errors', () => {
-    assert.ok(!isAuthError(new Error('boom')))
-    assert.ok(!isAuthError(null))
-    assert.ok(!isAuthError({ code: 'ONLY_CODE' }))
+    assert.ok(!isDomainError(new Error('boom')))
+    assert.ok(!isDomainError(null))
+    assert.ok(!isDomainError({ code: 'ONLY_CODE' }))
   })
 })
 

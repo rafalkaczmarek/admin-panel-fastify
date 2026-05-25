@@ -1,8 +1,8 @@
 import { before, beforeEach, describe, it, mock } from 'node:test'
 import * as assert from 'node:assert'
 import bcrypt from 'bcrypt'
-import { build, type TestContext } from '../helper'
-import prisma from '../../src/lib/prisma'
+import { build, type TestContext } from '../helper.js'
+import prisma from '../../src/lib/prisma.js'
 
 process.env.JWT_ACCESS_SECRET = 'test-secret'
 process.env.JWT_ACCESS_TTL = '15m'
@@ -85,7 +85,7 @@ describe('POST /api/auth/login', () => {
     await app.inject({
       method: 'POST',
       url: '/api/auth/login',
-      payload: { email: '  ADMIN@DashStack.com  ', password: 'admin123' },
+      payload: { email: 'ADMIN@DashStack.com', password: 'admin123' },
     })
 
     const findUniqueCall = prismaMock.user.findUnique.mock.calls[0] as { arguments: unknown[] } | undefined

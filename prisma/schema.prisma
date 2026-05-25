@@ -27,3 +27,18 @@ model RefreshToken {
 
   @@index([userId])
 }
+
+model Product {
+  id              String   @id @default(uuid())
+  image           String
+  name            String
+  category        String
+  price           Decimal  @db.Decimal(10, 2)
+  piece           Int      @default(0)
+  availableColors String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+}

@@ -7,7 +7,7 @@ import {
   generateRefreshToken,
   hashRefreshToken,
   refreshExpiry,
-} from '../../src/lib/tokens'
+} from '../../src/lib/tokens.js'
 
 const ORIGINAL_SECRET = process.env.JWT_ACCESS_SECRET
 

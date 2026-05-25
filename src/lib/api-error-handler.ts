@@ -1,20 +1,28 @@
 import { type FastifyError, type FastifyInstance } from 'fastify'
 import { AuthError } from '../services/authService.js'
+import { ProductError } from '../services/productService.js'
 
-function isAuthError (error: unknown): error is AuthError {
+interface ApiDomainError {
+  status: number
+  code: string
+  message: string
+}
+
+function isDomainError (error: unknown): error is ApiDomainError {
   return (
     error instanceof AuthError ||
+    error instanceof ProductError ||
     (typeof error === 'object' &&
       error !== null &&
       'status' in error &&
       'code' in error &&
-      typeof (error as AuthError).status === 'number')
+      typeof (error as ApiDomainError).status === 'number')
   )
 }
 
 function registerApiErrorHandler (fastify: FastifyInstance): void {
   fastify.setErrorHandler((error: unknown, request, reply) => {
-    if (isAuthError(error)) {
+    if (isDomainError(error)) {
       return reply.status(error.status).send({ code: error.code, message: error.message })
     }
 
@@ -26,11 +34,17 @@ function registerApiErrorHandler (fastify: FastifyInstance): void {
       fastify.log.error(fastifyError)
     }
 
+    const errorCode = (fastifyError as FastifyError & { code?: string }).code
+    const code =
+      errorCode === 'FST_ERR_VALIDATION'
+        ? 'BAD_REQUEST'
+        : errorCode ?? (isServerError ? 'INTERNAL_ERROR' : 'BAD_REQUEST')
+
     return reply.status(status).send({
-      code: (fastifyError as FastifyError & { code?: string }).code ?? (isServerError ? 'INTERNAL_ERROR' : 'BAD_REQUEST'),
+      code,
       message: isServerError ? 'Internal server error.' : (fastifyError.message ?? 'Bad request.'),
     })
   })
 }
 
-export { registerApiErrorHandler, isAuthError }
+export { registerApiErrorHandler, isDomainError, isDomainError as isAuthError }

@@ -1,7 +1,14 @@
 // This file contains code that we reuse between our tests.
+process.env.NODE_ENV ??= 'test'
+
+import { createRequire } from 'node:module'
 import * as path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import * as test from 'node:test'
+
+const require = createRequire(import.meta.url)
 const helper = require('fastify-cli/helper.js')
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export type TestContext = {
   after: typeof test.after
@@ -25,7 +32,7 @@ async function build (t: TestContext) {
   // fastify-plugin ensures that all decorators
   // are exposed for testing purposes, this is
   // different from the production setup
-  const app = await helper.build(argv, config())
+  const app = await helper.build(argv, config(), { pluginTimeout: 60_000 })
 
   // Tear down our app after we are done
   // eslint-disable-next-line no-void

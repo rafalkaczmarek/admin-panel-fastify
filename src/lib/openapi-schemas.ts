@@ -36,4 +36,42 @@ const loginBody = {
   required: ['email', 'password'],
 } as const
 
-export { apiError, authResponse, loginBody }
+const productStatus = {
+  type: 'string',
+  enum: ['in-stock', 'out-of-stock'],
+} as const
+
+const product = {
+  type: 'object',
+  properties: {
+    id: { type: 'string', format: 'uuid' },
+    image: { type: 'string' },
+    name: { type: 'string' },
+    category: { type: 'string' },
+    price: { type: 'number' },
+    piece: { type: 'integer' },
+    availableColors: { type: 'array', items: { type: 'string' } },
+    status: productStatus,
+  },
+  required: ['id', 'image', 'name', 'category', 'price', 'piece', 'availableColors', 'status'],
+} as const
+
+const productBody = {
+  type: 'object',
+  properties: {
+    image: { type: 'string' },
+    name: { type: 'string' },
+    category: { type: 'string' },
+    price: { type: 'number' },
+    piece: { type: 'integer' },
+    availableColors: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['image', 'name', 'category', 'price', 'piece', 'availableColors'],
+} as const
+
+const productList = {
+  type: 'array',
+  items: product,
+} as const
+
+export { apiError, authResponse, loginBody, product, productBody, productList }
