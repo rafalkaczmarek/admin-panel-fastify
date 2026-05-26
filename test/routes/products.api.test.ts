@@ -40,6 +40,19 @@ function authHeaders (): { authorization: string } {
   return { authorization: `Bearer ${accessToken}` }
 }
 
+async function postProduct (
+  t: TestContext,
+  payload: Record<string, unknown>,
+): Promise<{ statusCode: number, json: () => { code: string, message: string } }> {
+  const app = await build(t)
+  return app.inject({
+    method: 'POST',
+    url: '/api/products',
+    headers: authHeaders(),
+    payload,
+  })
+}
+
 before(async () => {
   const signed = signAccessToken({
     id: 'user-1',
@@ -157,16 +170,33 @@ describe('POST /api/products', () => {
   })
 
   it('returns 400 for invalid price', async (t: TestContext) => {
-    const app = await build(t)
-    const res = await app.inject({
-      method: 'POST',
-      url: '/api/products',
-      headers: authHeaders(),
-      payload: { ...VALID_BODY, price: -1 },
-    })
+    const res = await postProduct(t, { ...VALID_BODY, price: -1 })
 
     assert.equal(res.statusCode, 400)
     assert.equal(res.json().code, 'BAD_REQUEST')
+  })
+
+  describe('validation', () => {
+    const cases: Array<{ label: string, payload: Record<string, unknown> }> = [
+      { label: 'empty image', payload: { ...VALID_BODY, image: '' } },
+      { label: 'whitespace-only image', payload: { ...VALID_BODY, image: '   ' } },
+      { label: 'empty name', payload: { ...VALID_BODY, name: '' } },
+      { label: 'empty category', payload: { ...VALID_BODY, category: '' } },
+      { label: 'negative piece', payload: { ...VALID_BODY, piece: -1 } },
+      { label: 'non-integer piece', payload: { ...VALID_BODY, piece: 1.5 } },
+      { label: 'empty color string', payload: { ...VALID_BODY, availableColors: [''] } },
+      { label: 'whitespace-only color', payload: { ...VALID_BODY, availableColors: ['   '] } },
+    ]
+
+    for (const { label, payload } of cases) {
+      it(`returns 400 for ${label}`, async (t: TestContext) => {
+        const res = await postProduct(t, payload)
+
+        assert.equal(res.statusCode, 400)
+        assert.equal(res.json().code, 'BAD_REQUEST')
+        assert.equal(prismaMock.product.create.mock.callCount(), 0)
+      })
+    }
   })
 })
 
