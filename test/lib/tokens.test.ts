@@ -1,4 +1,4 @@
-import { describe, it } from 'node:test'
+import { afterEach, describe, it } from 'node:test'
 import * as assert from 'node:assert'
 import * as jwt from 'jsonwebtoken'
 import {
@@ -8,10 +8,18 @@ import {
   hashRefreshToken,
   refreshExpiry,
 } from '../../src/lib/tokens.js'
+import { snapshotEnv } from '../fixtures/env.js'
 
-const ORIGINAL_SECRET = process.env.JWT_ACCESS_SECRET
+const ENV_KEYS = [
+  'JWT_ACCESS_SECRET',
+  'JWT_ACCESS_TTL',
+  'REFRESH_TTL_DAYS',
+  'REFRESH_TTL_REMEMBER_DAYS',
+] as const
 
 describe('tokens', () => {
+  afterEach(snapshotEnv([...ENV_KEYS]))
+
   it('signAccessToken and verifyAccessToken round-trip', () => {
     process.env.JWT_ACCESS_SECRET = 'round-trip-secret'
     process.env.JWT_ACCESS_TTL = '1h'
@@ -37,7 +45,6 @@ describe('tokens', () => {
       () => signAccessToken({ id: 'u1', email: 'a@b.com', roles: [] }),
       /JWT_ACCESS_SECRET is not configured/,
     )
-    process.env.JWT_ACCESS_SECRET = ORIGINAL_SECRET
   })
 
   it('generateRefreshToken returns unique base64url strings', () => {

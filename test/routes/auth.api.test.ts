@@ -1,8 +1,8 @@
-import { before, beforeEach, describe, it, mock } from 'node:test'
+import { before, beforeEach, describe, it } from 'node:test'
 import * as assert from 'node:assert'
 import bcrypt from 'bcrypt'
 import { build, type TestContext } from '../helper.js'
-import prisma from '../../src/lib/prisma.js'
+import { installPrismaMock, prismaMock } from '../fixtures/prisma-mock.js'
 
 process.env.JWT_ACCESS_SECRET = 'test-secret'
 process.env.JWT_ACCESS_TTL = '15m'
@@ -10,14 +10,7 @@ process.env.REFRESH_TTL_DAYS = '7'
 process.env.REFRESH_TTL_REMEMBER_DAYS = '30'
 process.env.CORS_ORIGIN = 'http://localhost:4000'
 
-const prismaMock = {
-  user: { findUnique: mock.fn<() => Promise<unknown>>() },
-  refreshToken: {
-    create: mock.fn<() => Promise<unknown>>(),
-    findUnique: mock.fn<() => Promise<unknown>>(),
-    delete: mock.fn<() => Promise<unknown>>(),
-  },
-}
+installPrismaMock()
 
 let DEMO_USER: {
   id: string
@@ -38,8 +31,6 @@ function getRefreshCookie (res: { headers: Record<string, string | string[] | un
 }
 
 before(async () => {
-  prisma.__setForTests(prismaMock as never)
-
   const passwordHash = await bcrypt.hash('admin123', 4)
   DEMO_USER = {
     id: 'user-1',

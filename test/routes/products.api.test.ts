@@ -1,7 +1,7 @@
-import { before, beforeEach, describe, it, mock } from 'node:test'
+import { before, beforeEach, describe, it } from 'node:test'
 import * as assert from 'node:assert'
 import { build, type TestContext } from '../helper.js'
-import prisma from '../../src/lib/prisma.js'
+import { installPrismaMock, prismaMock } from '../fixtures/prisma-mock.js'
 import { signAccessToken } from '../../src/lib/tokens.js'
 
 process.env.JWT_ACCESS_SECRET = 'test-secret'
@@ -32,15 +32,7 @@ const VALID_BODY = {
   availableColors: ['#333333'],
 }
 
-const prismaMock = {
-  product: {
-    findMany: mock.fn<() => Promise<unknown[]>>(),
-    findUnique: mock.fn<() => Promise<unknown>>(),
-    create: mock.fn<() => Promise<unknown>>(),
-    update: mock.fn<() => Promise<unknown>>(),
-    delete: mock.fn<() => Promise<unknown>>(),
-  },
-}
+installPrismaMock()
 
 let accessToken: string
 
@@ -49,7 +41,6 @@ function authHeaders (): { authorization: string } {
 }
 
 before(async () => {
-  prisma.__setForTests(prismaMock as never)
   const signed = signAccessToken({
     id: 'user-1',
     email: 'admin@dashstack.com',
