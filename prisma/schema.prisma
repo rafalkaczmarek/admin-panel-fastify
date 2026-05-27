@@ -8,37 +8,41 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String
-  roles         String[]       @default([])
+  id            String         @id @default(uuid()) @map("user_id")
+  email         String         @unique(map: "users_email_key")
+  passwordHash  String         @map("password_hash")
+  roles         String[]       @default([]) @map("roles")
   refreshTokens RefreshToken[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  tokenHash String   @unique
-  userId    String
+  id        String   @id @default(uuid()) @map("refresh_token_id")
+  tokenHash String   @unique(map: "refresh_tokens_token_hash_key") @map("token_hash")
+  userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@index([userId])
+  @@index([userId], map: "idx_refresh_tokens_user_id")
+  @@map("refresh_tokens")
 }
 
 model Product {
-  id              String   @id @default(uuid())
-  image           String
-  name            String
-  category        String
-  price           Decimal  @db.Decimal(10, 2)
-  piece           Int      @default(0)
-  availableColors String[] @default([])
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id              String   @id @default(uuid()) @map("product_id")
+  image           String   @map("image")
+  name            String   @map("name")
+  category        String   @map("category")
+  price           Decimal  @map("price") @db.Decimal(10, 2)
+  piece           Int      @default(0) @map("piece")
+  availableColors String[] @default([]) @map("available_colors")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  @@index([category])
-  @@index([name])
+  @@index([category], map: "idx_products_category")
+  @@index([name], map: "idx_products_name")
+  @@map("products")
 }

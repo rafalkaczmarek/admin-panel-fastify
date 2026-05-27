@@ -1,20 +1,20 @@
 -- CreateTable
-CREATE TABLE "Product" (
-    "id" TEXT NOT NULL,
+CREATE TABLE "products" (
+    "product_id" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "price" DECIMAL(10,2) NOT NULL,
     "piece" INTEGER NOT NULL DEFAULT 0,
-    "availableColors" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "available_colors" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "products_pkey" PRIMARY KEY ("product_id")
 );
 
 -- CreateIndex
-CREATE INDEX "Product_category_idx" ON "Product"("category");
+CREATE INDEX "idx_products_category" ON "products"("category");
 
 -- CreateIndex
-CREATE INDEX "Product_name_idx" ON "Product"("name");
+CREATE INDEX "idx_products_name" ON "products"("name");
