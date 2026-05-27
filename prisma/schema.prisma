@@ -7,18 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String         @id @default(uuid()) @map("user_id")
-  email         String         @unique(map: "users_email_key")
-  passwordHash  String         @map("password_hash")
-  roles         String[]       @default([]) @map("roles")
-  refreshTokens RefreshToken[]
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-
-  @@map("users")
-}
-
 model RefreshToken {
   id        String   @id @default(uuid()) @map("refresh_token_id")
   tokenHash String   @unique(map: "refresh_tokens_token_hash_key") @map("token_hash")
@@ -29,6 +17,18 @@ model RefreshToken {
 
   @@index([userId], map: "idx_refresh_tokens_user_id")
   @@map("refresh_tokens")
+}
+
+model User {
+  id            String         @id @default(uuid()) @map("user_id")
+  email         String         @unique(map: "users_email_key")
+  passwordHash  String         @map("password_hash")
+  roles         String[]       @default([]) @map("roles")
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model Product {
